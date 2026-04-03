@@ -1,0 +1,63 @@
+# railway.toml
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "python main.py"
+healthcheckPath = "/health"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+---
+
+# ══════════════════════════════════════════════════════
+#  Railway 환경변수 설정 (Variables 탭에 모두 입력)
+# ══════════════════════════════════════════════════════
+
+# [필수]
+TELEGRAM_TOKEN=7xxxxxxxxx:AAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# [핵심 설정]
+ADMIN_CHAT_ID=123456789
+# └ 본인 Telegram ID (@userinfobot 에게 메시지 보내면 확인)
+
+ALLOWED_USER_IDS=123456789
+# └ 허용할 사용자 ID 목록 (쉼표 구분). 비워두면 전체 공개.
+
+# [리포트 주기]
+REPORT_INTERVAL_MIN=60
+# └ 정기 현황 리포트 발송 주기 (분). 기본값 60.
+
+# [Railway 모니터링 — 선택]
+RAILWAY_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# └ Railway 대시보드 → Account Settings → Tokens에서 발급
+
+RAILWAY_SERVICE_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+# └ Railway 프로젝트 → 서비스 URL에서 확인
+
+# [수익 API 연동 — 선택]
+REVENUE_API_URL=https://your-affiliate-api.com/stats
+REVENUE_API_KEY=your_api_key_here
+# └ 어필리에이트 플랫폼 API URL 및 키. 없으면 데모 데이터로 작동.
+
+# [알림 임계값]
+ALERT_CPU_PCT=85
+ALERT_MEM_PCT=85
+# └ CPU/메모리 이 퍼센트 초과 시 Telegram 즉시 알림
+
+# [DB 경로]
+DB_PATH=/data/eve.db
+# └ Railway Volume 마운트 경로. Volume 없으면 /tmp/eve.db 로 변경.
+
+# ══════════════════════════════════════════════════════
+#  새 파이프라인 추가 방법 (pipeline.py)
+# ══════════════════════════════════════════════════════
+# 1. @register_pipeline 데코레이터 붙인 Pipeline 서브클래스 작성
+# 2. name, description, schedule, interval_min 설정
+# 3. run(ctx) 메서드 구현 → ctx.send_alert()로 알림 전송
+# 4. 재배포 — 스케줄러가 자동으로 등록
+
+# 수익 데이터 웹훅 수동 입력:
+# POST https://your-app.railway.app/api/revenue
+# {"clicks": 100, "conversions": 5, "revenue": 250.00}
